@@ -23,72 +23,69 @@ router.get("/", async (req, res) => {
     const users = await User.find();
     res.json(users);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
+    res.json(err);
   }
 });
 
 // Register
+
 router.post("/signup", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
     const newUser = await User.create({
-      firstname: req.body.firstname,
+      firstname: req.body.firstname, // req.body menas data comes from frontend
       lastname: req.body.lastname,
       email: req.body.email,
-      password: hashedPassword,
+      password: req.body.password,
     });
 
-    console.log("User registered successfully:", newUser);
+    console.log(newUser);
+
+    // assign token to the user
 
     const token = signToken(newUser._id, newUser.email);
 
-    console.log("Generated token:", token);
+    console.log(token);
 
     res.status(200).json({
-      status: "success",
+      status: "Sucess",
       token,
       data: {
         user: newUser,
       },
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
+    throw err;
   }
 });
 
 // Login
+
 router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email,
+    });
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Authentication failed." });
+      return res.status(401).send("Authentication failed.");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Authentication failed." });
+      return res.status(401).send("Authentication failed.");
     }
 
     const token = signToken(user._id, user.email);
 
     res.status(200).json({
-      status: "success",
+      status: "Sucess",
       token,
       user,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
+    throw err;
   }
 });
 
