@@ -5,10 +5,10 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const authRouter = require("../blogbackend/auth/auth");
-const userRouter = require("../blogbackend/routes/user");
-const blogsRouter = require("../blogbackend/routes/blog");
-const reportBlogRouter = require("../blogbackend/routes/reportblog");
+const authRouter = require("./auth/auth");
+const userRouter = require("./routes/user");
+const blogsRouter = require("./routes/blog");
+const reportBlogRouter = require("./routes/reportblog");
 
 // JSOn file compresion
 app.use(bodyParser.json({ limit: "500mb" }));
